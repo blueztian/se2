@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SE2 Survivor Guide</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: '#10b981', // Emerald
+                        dark: '#0f172a',    // Slate 900
+                        taglish: '#f59e0b', // Amber
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Taglish Logic */
+        .taglish-box { display: none; }
+        body.taglish-active .taglish-box { display: block; animation: fadeIn 0.4s ease; }
+        
+        /* Flashcards */
+        .flashcard-container {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard-front, .flashcard-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            top: 0; left: 0;
+        }
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Tabs & Views */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
+
+        .module-view { display: none; }
+        .module-view.active { display: block; animation: fadeIn 0.4s ease; }
+        
+        /* Home Cards */
+        .home-card { transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+        .home-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col bg-slate-50">
+
+    <header class="bg-dark text-white p-4 md:p-6 shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                <button id="backBtn" onclick="showHome()" class="hidden bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-sm font-semibold transition flex-shrink-0">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>Home
+                </button>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tight"><i class="fa-solid fa-laptop-code text-primary mr-2"></i>SE2 Survivor Guide</h1>
+                    <p id="header-subtitle" class="text-xs md:text-sm text-slate-400 mt-1">Master your Software Engineering 2 Modules</p>
+                </div>
+            </div>
+            
+            <!-- Taglish Toggle Switch -->
+            <div class="flex items-center gap-3 bg-slate-800 border border-slate-700 px-4 py-2 rounded-full flex-shrink-0">
+                <span class="text-sm font-semibold text-slate-200">Tropa (Taglish) Mode</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="taglishToggle" class="sr-only peer">
+                    <div class="w-11 h-6 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-taglish"></div>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-6xl mx-auto w-full p-4 md:p-6 mb-12">
+        
+        <!-- HOME VIEW -->
+        <section id="home-view" class="module-view active">
+            <div class="text-center mb-10 mt-6">
+                <h2 class="text-3xl font-extrabold text-slate-800">Select a Module</h2>
+                <p class="text-slate-500 mt-2">Pick your battle to review the concepts and take the final boss quizzes.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Module 7-8 Card -->
+                <div onclick="showModule('module-7-8', 'Weeks 7-8: Risk & Configuration Management')" class="home-card bg-white border-2 border-slate-200 rounded-2xl p-6 flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-4">
+                        <i class="fa-solid fa-code-commit"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-2">Weeks 7-8</h3>
+                    <p class="text-sm text-slate-500 mb-4">Risk & Configuration Management, Version Control (Git), CI/CD.</p>
+                    <button class="mt-auto text-blue-600 font-bold hover:underline">Start Review &rarr;</button>
+                </div>
+
+                <!-- Module 9-10 Card -->
+                <div onclick="showModule('module-9-10', 'Weeks 9-10: Software Testing Fundamentals')" class="home-card bg-white border-2 border-slate-200 rounded-2xl p-6 flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl mb-4">
+                        <i class="fa-solid fa-bug-slash"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-2">Weeks 9-10</h3>
+                    <p class="text-sm text-slate-500 mb-4">Software Testing Fundamentals, STLC, Testing Levels & Automation.</p>
+                    <button class="mt-auto text-emerald-600 font-bold hover:underline">Start Review &rarr;</button>
+                </div>
+
+                <!-- Module 11-12 Card -->
+                <div onclick="showModule('module-11-12', 'Weeks 11-12: Software Quality Assurance (SQA)')" class="home-card bg-white border-2 border-slate-200 rounded-2xl p-6 flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-2xl mb-4">
+                        <i class="fa-solid fa-medal"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-2">Weeks 11-12</h3>
+                    <p class="text-sm text-slate-500 mb-4">Software Quality Assurance, Quality Metrics, Audits & Process Improvement.</p>
+                    <button class="mt-auto text-purple-600 font-bold hover:underline">Start Review &rarr;</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 7-8 -->
+        <div id="module-7-8" class="module-view">
+            <!-- Navigation -->
+            <nav class="mt-2 mb-6 overflow-x-auto pb-2 border-b border-slate-200">
+                <ul class="flex gap-2 sm:gap-4 min-w-max">
+                    <li><button onclick="switchTab('cm')" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-primary text-white transition hover:bg-emerald-600" data-target="cm">1. CM Basics</button></li>
+                    <li><button onclick="switchTab('vc')" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-slate-200 text-slate-700 transition hover:bg-slate-300" data-target="vc">2. Git & Version Control</button></li>
+                    <li><button onclick="switchTab('release')" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-slate-200 text-slate-700 transition hover:bg-slate-300" data-target="release">3. CI/CD & Releases</button></li>
+                    <li><button onclick="switchTab('quiz-7-8')" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-slate-200 text-slate-700 transition hover:bg-slate-300" data-target="quiz-7-8">4. Final Boss</button></li>
+                </ul>
+            </nav>
+        
+            <!-- CM Basics Tab -->
+            <section id="cm" class="tab-content active space-y-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold text-dark border-b-2 border-blue-500 pb-2 inline-block">Configuration Management (CM)</h2>
+                    <p class="mt-4 text-slate-600">The process of identifying, organizing, tracking, and controlling changes made to project assets to maintain integrity and consistency over time.</p>
+                    
+                    <div class="taglish-box mt-3 p-4 bg-amber-50 border-l-4 border-taglish rounded-r-lg">
+                        <p class="font-semibold text-amber-800"><i class="fa-solid fa-lightbulb mr-2"></i>Taglish Translation:</p>
+                        <p class="text-amber-900 mt-1">Ito yung pag-organize at pag-track sa lahat ng files at codes niyo para hindi kayo nag-ooverwrite-an ng gawa. Iwas din ito sa "gumagana naman sa PC ko ah" na palusot kasi pare-parehas kayo ng setup at versions na gamit.</p>
+                    </div>
+
+                    <div class="mt-6">
+                        <h3 class="font-bold text-slate-800 text-lg mb-3">Configuration Items (CIs)</h3>
+                        <p class="text-sm text-slate-600 mb-3">Any project component that must be managed and tracked. Examples:</p>
+                        <ul class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-slate-700">
+                            <li class="bg-slate-100 p-2 rounded"><i class="fa-solid fa-code text-blue-500 mr-2"></i>Source Code</li>
+                            <li class="bg-slate-100 p-2 rounded"><i class="fa-solid fa-file-word text-blue-500 mr-2"></i>Requirements</li>
+                            <li class="bg-slate-100 p-2 rounded"><i class="fa-solid fa-database text-blue-500 mr-2"></i>DB Schemas</li>
+                            <li class="bg-slate-100 p-2 rounded"><i class="fa-solid fa-gear text-blue-500 mr-2"></i>Config Files</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-6 border-t border-slate-200 pt-6">
+                        <h3 class="font-bold text-slate-800 text-lg mb-3">Configuration Management Activities</h3>
+                        <div class="grid md:grid-cols-2 gap-4 text-sm">
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <h4 class="font-bold text-blue-700">1. Configuration Identification</h4>
+                                <p class="text-slate-600 mt-1">Determine what should be controlled, naming conventions, and directory structures.</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <h4 class="font-bold text-blue-700">2. Configuration Control</h4>
+                                <p class="text-slate-600 mt-1">Ensures all changes are requested, reviewed, approved, implemented, and verified.</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <h4 class="font-bold text-blue-700">3. Configuration Status Accounting</h4>
+                                <p class="text-slate-600 mt-1">Maintains records of current versions, pending/approved changes, and release history.</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <h4 class="font-bold text-blue-700">4. Configuration Audits</h4>
+                                <p class="text-slate-600 mt-1">Verify documentation matches implementation and no unauthorized modifications exist.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Version Control Tab -->
+            <section id="vc" class="tab-content space-y-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold text-dark border-b-2 border-blue-500 pb-2 inline-block">Version Control & Git</h2>
+                    <p class="mt-4 text-slate-600">A system that records changes made to files over time so previous versions can be recalled.</p>
+
+                    <h3 class="font-bold text-lg text-slate-800 mt-6 mb-3">Basic Git Concepts</h3>
+                    <div class="flex flex-wrap gap-2 text-sm mb-6">
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full"><i class="fa-solid fa-box-archive mr-1"></i><strong>Repository:</strong> Storage location</span>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full"><i class="fa-solid fa-camera mr-1"></i><strong>Commit:</strong> Saved snapshot</span>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full"><i class="fa-solid fa-code-branch mr-1"></i><strong>Branch:</strong> Independent line</span>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full"><i class="fa-solid fa-code-merge mr-1"></i><strong>Merge:</strong> Combines changes</span>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full"><i class="fa-solid fa-clone mr-1"></i><strong>Clone:</strong> Copies repo</span>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full"><i class="fa-solid fa-cloud-arrow-down mr-1"></i><strong>Pull:</strong> Download updates</span>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full"><i class="fa-solid fa-cloud-arrow-up mr-1"></i><strong>Push:</strong> Upload commits</span>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6 mt-6">
+                        <div class="border border-slate-200 rounded-xl p-5">
+                            <h3 class="font-bold text-lg text-slate-800 border-b pb-2 mb-2">Centralized (CVCS)</h3>
+                            <p class="text-sm text-slate-600 mb-2">One central server stores the repository. (e.g., SVN)</p>
+                            <p class="text-xs text-red-600 font-semibold"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Risk: Single point of failure. Needs network access.</p>
+                        </div>
+                        <div class="border border-slate-200 rounded-xl p-5 bg-blue-50">
+                            <h3 class="font-bold text-blue-900 border-b border-blue-200 pb-2 mb-2">Distributed (DVCS)</h3>
+                            <p class="text-sm text-slate-600 mb-2">Every developer has a complete copy of the repository. (e.g., Git)</p>
+                            <p class="text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i>Pro: Work offline, faster, multiple backups.</p>
+                        </div>
+                    </div>
+
+                    <h3 class="font-bold text-lg text-slate-800 mt-6 mb-3">Git Workflow Branches</h3>
+                    <div class="space-y-2 text-sm text-slate-700">
+                        <p><span class="font-bold text-blue-600">Main:</span> Production-ready code. Official release history.</p>
+                        <p><span class="font-bold text-blue-600">Develop:</span> Integration hub for new features before release.</p>
+                        <p><span class="font-bold text-blue-600">Feature:</span> Where you build a new function (won't disturb main code).</p>
+                        <p><span class="font-bold text-blue-600">Release:</span> Buffer branch prepping code for production (final touches/bug fixes).</p>
+                        <p><span class="font-bold text-red-500">Hotfix:</span> Swift avenue for fixing critical bugs in production.</p>
+                        
+                        <div class="taglish-box mt-3 p-3 bg-amber-50 border-l-4 border-taglish rounded text-xs">
+                            <span class="font-bold text-amber-800">Taglish:</span> Gumagawa tayo ng 'branch' (parang alternate universe) para pag nagkamali ka ng code, hindi masisira yung main project ng buong team. Pag tapos at okay na, tsaka mo i-Me-Merge sa Main.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CI/CD Tab -->
+            <section id="release" class="tab-content space-y-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold text-dark border-b-2 border-blue-500 pb-2 inline-block">CI/CD & Releases</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 mt-4">
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <h3 class="font-bold text-blue-700"><i class="fa-solid fa-rotate mr-2"></i>Continuous Integration (CI)</h3>
+                            <p class="text-sm text-slate-600 mt-1">Automatically integrating code changes into a shared repository several times a day. Triggers automated Builds and Tests.</p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <h3 class="font-bold text-blue-700"><i class="fa-solid fa-rocket mr-2"></i>Continuous Deployment (CD)</h3>
+                            <p class="text-sm text-slate-600 mt-1">Code changes pass automated tests and go straight to production automatically, skipping manual approval.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 border-t border-slate-200 pt-6">
+                        <h3 class="font-bold text-lg text-slate-800 mb-3">Build & Release Management</h3>
+                        <p class="text-sm text-slate-600 mb-4"><strong>Build Management:</strong> Converting source code into executable software (Compiling, Testing, Packaging).</p>
+                        <div class="grid md:grid-cols-3 gap-3 text-sm">
+                            <div class="bg-slate-100 p-3 rounded border-l-4 border-slate-400">
+                                <strong>Major Release (v3.0)</strong><br><span class="text-xs text-slate-500">Significant new features/changes.</span>
+                            </div>
+                            <div class="bg-slate-100 p-3 rounded border-l-4 border-blue-400">
+                                <strong>Minor Release (v3.2)</strong><br><span class="text-xs text-slate-500">Enhancements without major changes.</span>
+                            </div>
+                            <div class="bg-slate-100 p-3 rounded border-l-4 border-emerald-400">
+                                <strong>Patch Release (v3.2.1)</strong><br><span class="text-xs text-slate-500">Fixes bugs or security vulnerabilities.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="font-bold text-lg text-slate-800 mt-6 mb-3">Release Strategies (Click to Flip)</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 h-40">
+                        <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                            <div class="flashcard">
+                                <div class="flashcard-front bg-slate-800 text-white rounded-xl flex items-center justify-center p-4 shadow-md text-lg font-bold text-center">Big Bang</div>
+                                <div class="flashcard-back bg-white border-2 border-slate-800 rounded-xl flex flex-col items-center justify-center p-2 shadow-md text-center text-xs">
+                                    <p>Entire system is deployed at once. Simple but higher risk.</p>
+                                    <div class="taglish-box mt-1 text-[10px] text-amber-600 font-semibold">Isang bagsakan. Pag pumalpak, sira lahat!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                            <div class="flashcard">
+                                <div class="flashcard-front bg-slate-800 text-white rounded-xl flex items-center justify-center p-4 shadow-md text-lg font-bold text-center">Rolling</div>
+                                <div class="flashcard-back bg-white border-2 border-slate-800 rounded-xl flex flex-col items-center justify-center p-2 shadow-md text-center text-xs">
+                                    <p>Updates deployed gradually to servers/users. Reduces downtime.</p>
+                                    <div class="taglish-box mt-1 text-[10px] text-amber-600 font-semibold">Paunti-unti ang update para di ramdam ang downtime.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                            <div class="flashcard">
+                                <div class="flashcard-front bg-slate-800 text-white rounded-xl flex items-center justify-center p-4 shadow-md text-lg font-bold text-center">Blue-Green</div>
+                                <div class="flashcard-back bg-white border-2 border-slate-800 rounded-xl flex flex-col items-center justify-center p-2 shadow-md text-center text-xs">
+                                    <p>Maintains two identical environments. Switches traffic from old to new.</p>
+                                    <div class="taglish-box mt-1 text-[10px] text-amber-600 font-semibold">Pag palpak yung bago, lipat agad sa lumang server!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                            <div class="flashcard">
+                                <div class="flashcard-front bg-slate-800 text-white rounded-xl flex items-center justify-center p-4 shadow-md text-lg font-bold text-center">Canary</div>
+                                <div class="flashcard-back bg-white border-2 border-slate-800 rounded-xl flex flex-col items-center justify-center p-2 shadow-md text-center text-xs">
+                                    <p>Released to a small subset first. If successful, expanded to all.</p>
+                                    <div class="taglish-box mt-1 text-[10px] text-amber-600 font-semibold">Parang beta testers. Pinapagamit sa onting tao muna.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quiz 7-8 Tab -->
+            <section id="quiz-7-8" class="tab-content space-y-6">
+                <div class="bg-dark text-white p-8 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-blue-400 mb-2">Final Boss: ABC Software Solutions</h2>
+                    <p class="text-slate-300 text-sm">Apply Configuration Management to a real case study.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border-2 border-slate-200 shadow-sm">
+                    <!-- Q1 -->
+                    <div class="quiz-step active-step">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">Case Scenario:</h3>
+                        <p class="text-slate-600 mb-6 italic bg-slate-50 p-4 rounded border-l-4 border-slate-400">"An online enrollment system fails. Developers are using different versions of programming libraries, modifying config files without informing the team, and features that work on one PC produce errors on another."</p>
+                        
+                        <p class="font-bold mb-3">Q1: What is the fundamental root cause of these issues?</p>
+                        <div class="space-y-3">
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, false)">A) Lack of Usability Testing</button>
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, true)">B) Absence of Configuration Management and Version Control</button>
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, false)">C) The servers are under a DDOS attack</button>
+                        </div>
+                        <div class="hidden feedback mt-4 p-4 rounded-lg"></div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="quiz-step hidden mt-8 pt-8 border-t border-slate-200">
+                        <p class="font-bold mb-3">Q2: To prevent developers from modifying files without team knowledge and overwriting each other's code, what specific tool/system should be implemented?</p>
+                        <div class="space-y-3">
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, true)">A) A Distributed Version Control System (DVCS) like Git</button>
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, false)">B) A new database schema</button>
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, false)">C) Better Antivirus software</button>
+                        </div>
+                        <div class="hidden feedback mt-4 p-4 rounded-lg"></div>
+                    </div>
+
+                    <!-- Victory Screen -->
+                    <div class="hidden text-center py-10 victory-screen">
+                        <i class="fa-solid fa-trophy text-6xl text-blue-400 mb-4 drop-shadow-lg"></i>
+                        <h3 class="text-2xl font-bold text-dark">Configuration Master!</h3>
+                        <p class="text-slate-600 mt-2">You know how to keep software development organized and crash-free.</p>
+                        <button onclick="resetQuiz(this)" class="mt-6 px-6 py-2 bg-blue-500 text-white font-bold rounded-full hover:bg-blue-600 transition">Retake Quiz</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- MODULE 9-10: Software Testing -->
+        <div id="module-9-10" class="module-view">
+            <!-- Navigation -->
+            <nav class="mt-2 mb-6 overflow-x-auto pb-2 border-b border-slate-200">
+                <ul class="flex gap-2 sm:gap-4 min-w-max">
+                    <li><button onclick="switchTab('stlc')" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-primary text-white transition hover:bg-emerald-600" data-target="stlc">1. STLC & Intro</button></li>
+                    <li><button onclick="switchTab('test-levels')" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-slate-200 text-slate-700 transition hover:bg-slate-300" data-target="test-levels">2. Testing Levels</button></li>
+                    <li><button onclick="switchTab('test-types')" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-slate-200 text-slate-700 transition hover:bg-slate-300" data-target="test-types">3. Types & Automation</button></li>
+                    <li><button onclick="switchTab('quiz-9-10')" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-slate-200 text-slate-700 transition hover:bg-slate-300" data-target="quiz-9-10">4. Final Boss</button></li>
+                </ul>
+            </nav>
+
+            <section id="stlc" class="tab-content active space-y-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold text-dark border-b-2 border-emerald-500 pb-2 inline-block">Software Testing Fundamentals</h2>
+                    <p class="mt-4 text-slate-600">The process of evaluating and verifying that a software application meets its specified requirements and works as intended.</p>
+                    
+                    <div class="taglish-box mt-3 p-4 bg-amber-50 border-l-4 border-taglish rounded-r-lg">
+                        <p class="font-semibold text-amber-800"><i class="fa-solid fa-lightbulb mr-2"></i>Taglish Translation:</p>
+                        <p class="text-amber-900 mt-1">Ito yung sinisigurado mong walang bug yung gawa niyo at tama yung ginagawa bago pa i-release. Kumbaga, quality control bago i-benta para hindi magalit yung client.</p>
+                    </div>
+
+                    <div class="mt-6">
+                        <h3 class="text-xl font-bold text-emerald-800 mb-4">Software Testing Life Cycle (STLC)</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center gap-3 bg-slate-50 p-2 rounded border border-slate-200"><span class="font-bold w-4 text-emerald-600">1</span> <strong>Requirement Analysis:</strong> Study docs, clarify ambiguities.</div>
+                            <div class="flex items-center gap-3 bg-slate-50 p-2 rounded border border-slate-200"><span class="font-bold w-4 text-emerald-600">2</span> <strong>Test Planning:</strong> Define strategy, schedule, assign tools.</div>
+                            <div class="flex items-center gap-3 bg-slate-50 p-2 rounded border border-slate-200"><span class="font-bold w-4 text-emerald-600">3</span> <strong>Test Case Dev:</strong> Write test cases and prepare test data.</div>
+                            <div class="flex items-center gap-3 bg-slate-50 p-2 rounded border border-slate-200"><span class="font-bold w-4 text-emerald-600">4</span> <strong>Environment Setup:</strong> Install software, configure DBs/servers.</div>
+                            <div class="flex items-center gap-3 bg-slate-50 p-2 rounded border border-slate-200"><span class="font-bold w-4 text-emerald-600">5</span> <strong>Test Execution:</strong> Run tests, record results, report defects.</div>
+                            <div class="flex items-center gap-3 bg-slate-50 p-2 rounded border border-slate-200"><span class="font-bold w-4 text-emerald-600">6</span> <strong>Defect Tracking:</strong> Log, prioritize, verify fixes, run regression.</div>
+                            <div class="flex items-center gap-3 bg-slate-50 p-2 rounded border border-slate-200"><span class="font-bold w-4 text-emerald-600">7</span> <strong>Test Closure:</strong> Evaluate results, document lessons learned.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="test-levels" class="tab-content space-y-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold text-dark border-b-2 border-emerald-500 pb-2 inline-block">Levels of Testing</h2>
+                    <div class="grid md:grid-cols-2 gap-6 mt-6">
+                        <!-- Unit -->
+                        <div class="border border-slate-200 rounded-xl p-5 hover:shadow-md transition">
+                            <h3 class="font-bold text-lg text-slate-800">1. Unit Testing</h3>
+                            <p class="text-xs text-slate-500 mb-2">Performed by: <span class="font-bold text-slate-700">Developers</span></p>
+                            <p class="text-sm">Tests individual functions, methods, or classes to ensure each unit functions correctly.</p>
+                            <div class="taglish-box mt-3 p-2 bg-amber-50 border-l-4 border-taglish rounded text-xs">
+                                <span class="font-bold text-amber-800">Taglish:</span> "Gumagana ba mag-isa 'tong maliit na Login function ko?"
+                            </div>
+                        </div>
+                        
+                        <!-- Integration -->
+                        <div class="border border-slate-200 rounded-xl p-5 hover:shadow-md transition">
+                            <h3 class="font-bold text-lg text-slate-800">2. Integration Testing</h3>
+                            <p class="text-xs text-slate-500 mb-2">Performed by: <span class="font-bold text-slate-700">Developers</span></p>
+                            <p class="text-sm">Tests whether multiple modules work correctly together (Data exchange).</p>
+                            <div class="taglish-box mt-3 p-2 bg-amber-50 border-l-4 border-taglish rounded text-xs">
+                                <span class="font-bold text-amber-800">Taglish:</span> "Nakakapag-usap ba yung Login page at yung Database natin?"
+                            </div>
+                        </div>
+
+                        <!-- System -->
+                        <div class="border border-slate-200 rounded-xl p-5 hover:shadow-md transition">
+                            <h3 class="font-bold text-lg text-slate-800">3. System Testing</h3>
+                            <p class="text-xs text-slate-500 mb-2">Performed by: <span class="font-bold text-slate-700">QA Engineers</span></p>
+                            <p class="text-sm">Tests the complete integrated application (end-to-end workflows).</p>
+                            <div class="taglish-box mt-3 p-2 bg-amber-50 border-l-4 border-taglish rounded text-xs">
+                                <span class="font-bold text-amber-800">Taglish:</span> Test ng buong app. Mula umpisa hanggang dulo.
+                            </div>
+                        </div>
+
+                        <!-- Acceptance -->
+                        <div class="border border-emerald-300 rounded-xl p-5 hover:shadow-md transition bg-emerald-50">
+                            <h3 class="font-bold text-lg text-emerald-900">4. Acceptance Testing</h3>
+                            <p class="text-xs text-slate-500 mb-2">Performed by: <span class="font-bold text-emerald-700">Client / End Users</span></p>
+                            <p class="text-sm mb-2">Determines whether software is ready for release.</p>
+                            <ul class="text-xs space-y-1 list-disc pl-4 text-emerald-800">
+                                <li><strong>UAT:</strong> Users verify business needs.</li>
+                                <li><strong>Alpha:</strong> Internal controlled environment.</li>
+                                <li><strong>Beta:</strong> Real-world limited release.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="test-types" class="tab-content space-y-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-bold text-dark mb-4">Types of Software Testing (Click to Flip)</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <!-- Smoke & Sanity -->
+                        <div class="flashcard-container h-48" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                            <div class="flashcard">
+                                <div class="flashcard-front bg-slate-800 text-white rounded-xl flex flex-col items-center justify-center p-4 shadow-md text-center">
+                                    <i class="fa-solid fa-wind text-2xl mb-2 text-emerald-400"></i>
+                                    <span class="font-bold">Smoke & Sanity</span>
+                                </div>
+                                <div class="flashcard-back bg-white border-2 border-slate-800 rounded-xl flex flex-col items-center justify-center p-3 shadow-md text-center text-xs overflow-y-auto">
+                                    <p><strong>Smoke:</strong> Checks major features on a new build.<br><strong>Sanity:</strong> Verifies a specific bug fix.</p>
+                                    <div class="taglish-box mt-2 p-1 bg-amber-50 rounded text-[10px] text-amber-800 border-l-2 border-taglish">Smoke = Bumukas ba? Sanity = Naayos ba yung sira?</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Regression -->
+                        <div class="flashcard-container h-48" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                            <div class="flashcard">
+                                <div class="flashcard-front bg-slate-800 text-white rounded-xl flex flex-col items-center justify-center p-4 shadow-md text-center">
+                                    <i class="fa-solid fa-backward-step text-2xl mb-2 text-emerald-400"></i>
+                                    <span class="font-bold">Regression</span>
+                                </div>
+                                <div class="flashcard-back bg-white border-2 border-slate-800 rounded-xl flex flex-col items-center justify-center p-3 shadow-md text-center text-xs overflow-y-auto">
+                                    <p>Ensures existing features still work correctly after new changes or fixes are made.</p>
+                                    <div class="taglish-box mt-2 p-1 bg-amber-50 rounded text-[10px] text-amber-800 border-l-2 border-taglish">Siguraduhing hindi nakasira ng lumang code yung bago mong update.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Performance -->
+                        <div class="flashcard-container h-48" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                            <div class="flashcard">
+                                <div class="flashcard-front bg-slate-800 text-white rounded-xl flex flex-col items-center justify-center p-4 shadow-md text-center">
+                                    <i class="fa-solid fa-gauge-high text-2xl mb-2 text-emerald-400"></i>
+                                    <span class="font-bold">Performance</span>
+                                </div>
+                                <div class="flashcard-back bg-white border-2 border-slate-800 rounded-xl flex flex-col items-center justify-center p-3 shadow-md text-center text-xs overflow-y-auto">
+                                    <p>Measures system speed, response time, throughput, CPU, and memory usage.</p>
+                                    <div class="taglish-box mt-2 p-1 bg-amber-50 rounded text-[10px] text-amber-800 border-l-2 border-taglish">Mabilis ba mag-load? Magastos ba sa RAM?</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Load & Stress -->
+                        <div class="flashcard-container h-48" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                            <div class="flashcard">
+                                <div class="flashcard-front bg-slate-800 text-white rounded-xl flex flex-col items-center justify-center p-4 shadow-md text-center">
+                                    <i class="fa-solid fa-weight-hanging text-2xl mb-2 text-emerald-400"></i>
+                                    <span class="font-bold">Load & Stress</span>
+                                </div>
+                                <div class="flashcard-back bg-white border-2 border-slate-800 rounded-xl flex flex-col items-center justify-center p-3 shadow-md text-center text-[11px] overflow-y-auto">
+                                    <p><strong>Load:</strong> System behavior under <i>expected</i> user traffic.<br><strong>Stress:</strong> Pushing <i>beyond</i> capacity to find the breaking point.</p>
+                                    <div class="taglish-box mt-2 p-1 bg-amber-50 rounded text-[10px] text-amber-800 border-l-2 border-taglish">Load: Kaya ba ang 5k users? Stress: Sa pang-ilang user siya mag-crash?</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Security -->
+                        <div class="flashcard-container h-48" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                            <div class="flashcard">
+                                <div class="flashcard-front bg-slate-800 text-white rounded-xl flex flex-col items-center justify-center p-4 shadow-md text-center">
+                                    <i class="fa-solid fa-shield-halved text-2xl mb-2 text-emerald-400"></i>
+                                    <span class="font-bold">Security</span>
+                                </div>
+                                <div class="flashcard-back bg-white border-2 border-slate-800 rounded-xl flex flex-col items-center justify-center p-3 shadow-md text-center text-xs overflow-y-auto">
+                                    <p>Checks for vulnerabilities like SQL Injection, XSS, and authentication flaws.</p>
+                                    <div class="taglish-box mt-2 p-1 bg-amber-50 rounded text-[10px] text-amber-800 border-l-2 border-taglish">Madali bang ma-hack? Ligtas ba data ng users?</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Usability -->
+                        <div class="flashcard-container h-48" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                            <div class="flashcard">
+                                <div class="flashcard-front bg-slate-800 text-white rounded-xl flex flex-col items-center justify-center p-4 shadow-md text-center">
+                                    <i class="fa-solid fa-hand-pointer text-2xl mb-2 text-emerald-400"></i>
+                                    <span class="font-bold">Usability</span>
+                                </div>
+                                <div class="flashcard-back bg-white border-2 border-slate-800 rounded-xl flex flex-col items-center justify-center p-3 shadow-md text-center text-xs overflow-y-auto">
+                                    <p>Determines if the application is easy to use, intuitive, and clearly labeled.</p>
+                                    <div class="taglish-box mt-2 p-1 bg-amber-50 rounded text-[10px] text-amber-800 border-l-2 border-taglish">User-friendly ba? Di ba nakakalito ang mga buttons?</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Compatibility -->
+                        <div class="flashcard-container h-48" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                            <div class="flashcard">
+                                <div class="flashcard-front bg-slate-800 text-white rounded-xl flex flex-col items-center justify-center p-4 shadow-md text-center">
+                                    <i class="fa-solid fa-mobile-screen text-2xl mb-2 text-emerald-400"></i>
+                                    <span class="font-bold">Compatibility</span>
+                                </div>
+                                <div class="flashcard-back bg-white border-2 border-slate-800 rounded-xl flex flex-col items-center justify-center p-3 shadow-md text-center text-xs overflow-y-auto">
+                                    <p>Checks operation across different browsers, operating systems, devices, and screen sizes.</p>
+                                    <div class="taglish-box mt-2 p-1 bg-amber-50 rounded text-[10px] text-amber-800 border-l-2 border-taglish">Gumagana ba sa Chrome, Safari, iPhone, at Android?</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 border-t border-slate-200 pt-8">
+                        <h3 class="text-xl font-bold text-dark mb-4"><i class="fa-solid fa-robot text-emerald-500 mr-2"></i>Software Testing Automation</h3>
+                        <p class="text-sm text-slate-600 mb-6">Using software tools and scripts to execute tests automatically, compare results, and generate reports with minimal human intervention.</p>
+                        
+                        <div class="taglish-box mb-6 p-4 bg-amber-50 border-l-4 border-taglish rounded-r-lg text-sm text-amber-900">
+                            <strong>Taglish:</strong> Imbes na ikaw yung paulit-ulit na magta-type at magki-click para mag-test, gagawa ka ng script (bot) para siya na ang gumawa. Mabilis at walang pagod, pero medyo matagal i-setup sa umpisa.
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- Pros and Cons -->
+                            <div class="space-y-4">
+                                <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                                    <h4 class="font-bold text-emerald-800 mb-2"><i class="fa-solid fa-thumbs-up mr-2"></i>Benefits</h4>
+                                    <ul class="text-xs text-emerald-900 space-y-1 list-disc pl-4">
+                                        <li>Faster execution and higher accuracy.</li>
+                                        <li>Reusable test scripts.</li>
+                                        <li>Supports CI/CD pipelines.</li>
+                                        <li>Enables frequent regression testing.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                                    <h4 class="font-bold text-red-800 mb-2"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Limitations</h4>
+                                    <ul class="text-xs text-red-900 space-y-1 list-disc pl-4">
+                                        <li>High initial setup cost.</li>
+                                        <li>Requires programming/scripting skills.</li>
+                                        <li>Scripts need maintenance when the app changes.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- When to automate -->
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <h4 class="font-bold text-slate-800 border-b pb-2 mb-3">When to Automate?</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <h5 class="text-xs font-bold text-emerald-700 mb-1"><i class="fa-solid fa-check mr-1"></i>YES (Automate these)</h5>
+                                        <ul class="text-[11px] text-slate-600 list-disc pl-4 space-y-1">
+                                            <li>Repetitive & stable tests</li>
+                                            <li>Time-consuming tests</li>
+                                            <li>Regression & Data-driven</li>
+                                            <li>Cross-browser tests</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-xs font-bold text-red-700 mb-1"><i class="fa-solid fa-xmark mr-1"></i>NO (Manual testing)</h5>
+                                        <ul class="text-[11px] text-slate-600 list-disc pl-4 space-y-1">
+                                            <li>One-time tests</li>
+                                            <li>Frequently changing features</li>
+                                            <li>Exploratory testing</li>
+                                            <li>Usability testing</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tools -->
+                        <div class="mt-6">
+                            <h4 class="font-bold text-slate-800 mb-3">Common Automation Tools</h4>
+                            <div class="flex flex-wrap gap-2 text-xs">
+                                <span class="px-3 py-2 bg-blue-50 text-blue-800 rounded border border-blue-200"><strong>Selenium</strong> (Web apps)</span>
+                                <span class="px-3 py-2 bg-blue-50 text-blue-800 rounded border border-blue-200"><strong>Cypress</strong> (Modern web)</span>
+                                <span class="px-3 py-2 bg-blue-50 text-blue-800 rounded border border-blue-200"><strong>Playwright</strong> (Cross-browser)</span>
+                                <span class="px-3 py-2 bg-purple-50 text-purple-800 rounded border border-purple-200"><strong>Appium</strong> (Mobile apps)</span>
+                                <span class="px-3 py-2 bg-slate-100 text-slate-800 rounded border border-slate-200"><strong>JUnit</strong> (Java unit)</span>
+                                <span class="px-3 py-2 bg-slate-100 text-slate-800 rounded border border-slate-200"><strong>NUnit</strong> (.NET unit)</span>
+                                <span class="px-3 py-2 bg-slate-100 text-slate-800 rounded border border-slate-200"><strong>pytest</strong> (Python)</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <section id="quiz-9-10" class="tab-content space-y-6">
+                <div class="bg-dark text-white p-8 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-emerald-400 mb-2">Final Boss: Library Management System</h2>
+                    <p class="text-slate-300 text-sm">Apply STLC and Testing Levels to a real case study.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border-2 border-slate-200 shadow-sm">
+                    <div class="quiz-step active-step">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">Case Scenario:</h3>
+                        <p class="text-slate-600 mb-6 italic bg-slate-50 p-4 rounded border-l-4 border-slate-400">"A new Library app has bugs before launch: 1) Users can't log in. 2) Slows down with many users. 3) Borrowing breaks AFTER fixing login. 4) Mobile layout is broken."</p>
+                        
+                        <p class="font-bold mb-3">Q1: Which type of testing is specifically required to catch Issue #3 (Borrowing breaks AFTER fixing the login)?</p>
+                        <div class="space-y-3">
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, false)">A) Sanity Testing</button>
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, true)">B) Regression Testing</button>
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, false)">C) Smoke Testing</button>
+                        </div>
+                        <div class="hidden feedback mt-4 p-4 rounded-lg"></div>
+                    </div>
+
+                    <div class="quiz-step hidden mt-8 pt-8 border-t border-slate-200">
+                        <p class="font-bold mb-3">Q2: Issue #2 states "The system responds slowly when many users access it". What type of testing should you run to measure and fix this?</p>
+                        <div class="space-y-3">
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, false)">A) Usability Testing</button>
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, false)">B) System Testing</button>
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, true)">C) Load & Performance Testing</button>
+                        </div>
+                        <div class="hidden feedback mt-4 p-4 rounded-lg"></div>
+                    </div>
+
+                    <div class="hidden text-center py-10 victory-screen">
+                        <i class="fa-solid fa-trophy text-6xl text-emerald-400 mb-4 drop-shadow-lg"></i>
+                        <h3 class="text-2xl font-bold text-dark">Testing Master!</h3>
+                        <p class="text-slate-600 mt-2">You have successfully navigated the Software Testing Life Cycle.</p>
+                        <button onclick="resetQuiz(this)" class="mt-6 px-6 py-2 bg-emerald-500 text-white font-bold rounded-full hover:bg-emerald-600 transition">Retake Quiz</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- MODULE 11-12: SQA -->
+        <div id="module-11-12" class="module-view">
+            <!-- Navigation -->
+            <nav class="mt-2 mb-6 overflow-x-auto pb-2 border-b border-slate-200">
+                <ul class="flex gap-2 sm:gap-4 min-w-max">
+                    <li><button onclick="switchTab('sqa-intro')" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-primary text-white transition hover:bg-emerald-600" data-target="sqa-intro">1. Quality & SQA</button></li>
+                    <li><button onclick="switchTab('sqa-docs')" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-slate-200 text-slate-700 transition hover:bg-slate-300" data-target="sqa-docs">2. SQA Docs</button></li>
+                    <li><button onclick="switchTab('sqa-audits')" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-slate-200 text-slate-700 transition hover:bg-slate-300" data-target="sqa-audits">3. Audits & Process</button></li>
+                    <li><button onclick="switchTab('quiz-11-12')" class="tab-btn px-4 py-2 rounded-lg font-semibold bg-slate-200 text-slate-700 transition hover:bg-slate-300" data-target="quiz-11-12">4. Final Boss</button></li>
+                </ul>
+            </nav>
+
+            <section id="sqa-intro" class="tab-content active space-y-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold text-dark border-b-2 border-purple-500 pb-2 inline-block">Software Quality Assurance (SQA)</h2>
+                    <p class="mt-4 text-slate-600">A systematic approach used to ensure that software development processes and products meet established quality standards.</p>
+                    
+                    <div class="bg-purple-50 p-5 rounded-xl border border-purple-100 mt-6 shadow-inner">
+                        <h3 class="text-xl font-bold text-purple-900 mb-4 text-center">SQA vs Quality Control (QC)</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-bold text-purple-800 text-center border-b border-purple-200 pb-2 mb-2">Quality Assurance (SQA)</h4>
+                                <ul class="text-sm space-y-2 text-slate-700">
+                                    <li><i class="fa-solid fa-check text-purple-500 w-4"></i> Focuses on <strong>processes</strong></li>
+                                    <li><i class="fa-solid fa-shield text-purple-500 w-4"></i> <strong>Prevents</strong> defects</li>
+                                    <li><i class="fa-solid fa-magnifying-glass text-purple-500 w-4"></i> "Are we following the right process?"</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-center border-b border-slate-200 pb-2 mb-2">Quality Control (QC)</h4>
+                                <ul class="text-sm space-y-2 text-slate-700">
+                                    <li><i class="fa-solid fa-check text-slate-500 w-4"></i> Focuses on <strong>products/results</strong></li>
+                                    <li><i class="fa-solid fa-bug text-slate-500 w-4"></i> <strong>Detects</strong> defects (Testing)</li>
+                                    <li><i class="fa-solid fa-magnifying-glass text-slate-500 w-4"></i> "Does the product work correctly?"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="taglish-box mt-3 p-4 bg-amber-50 border-l-4 border-taglish rounded-r-lg">
+                        <p class="font-semibold text-amber-800"><i class="fa-solid fa-lightbulb mr-2"></i>Taglish Translation:</p>
+                        <p class="text-amber-900 mt-1"><strong>QC (Testing)</strong> = Sila yung taga-hanap ng bug sa gawa niyo. <br><strong>SQA</strong> = Sila yung nagaayos ng sistema niyo para *hindi* na kayo gumawa ng bug sa susunod (Preventive).</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sqa-docs" class="tab-content space-y-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-bold text-dark mb-4">SQA Documentation</h3>
+                    <p class="text-sm text-slate-600 mb-6">Provides evidence that quality processes are planned, performed, and monitored.</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="p-4 border border-slate-100 rounded bg-slate-50">
+                            <span class="font-bold text-slate-800">1. SQA Plan (SQAP)</span>
+                            <p class="text-xs text-slate-600 mt-1">Describes how quality will be managed (objectives, standards, roles).</p>
+                        </div>
+                        <div class="p-4 border border-slate-100 rounded bg-slate-50">
+                            <span class="font-bold text-slate-800">2. Test Plan</span>
+                            <p class="text-xs text-slate-600 mt-1">Defines what to test, how to test, who tests, and expected results.</p>
+                        </div>
+                        <div class="p-4 border border-slate-100 rounded bg-slate-50">
+                            <span class="font-bold text-slate-800">3. Test Cases & Results</span>
+                            <p class="text-xs text-slate-600 mt-1">Specific tests to be performed and the Pass/Fail record.</p>
+                        </div>
+                        <div class="p-4 border border-slate-100 rounded bg-slate-50">
+                            <span class="font-bold text-slate-800">4. Defect/Bug Reports</span>
+                            <p class="text-xs text-slate-600 mt-1">Records problems (ID, Description, Severity, Steps to reproduce).</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="sqa-audits" class="tab-content space-y-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-xl font-bold text-dark mb-4">Quality Audits & Process Improvement</h3>
+                    <p class="text-sm text-slate-600 mb-6">An independent examination to check compliance with established standards. It asks: "Are we following the agreed-upon processes?"</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 pt-4 border-t border-slate-200">
+                        <div class="bg-red-50 p-4 rounded border-l-4 border-red-500">
+                            <h4 class="font-bold text-red-800">Corrective Action</h4>
+                            <p class="text-sm text-red-900 mt-1">Addresses the cause of an <strong>existing</strong> problem.</p>
+                            <div class="taglish-box mt-2 text-xs bg-white p-2 rounded text-red-800">Nasunugan na, kaya bumili ng fire extinguisher at inayos ang wire.</div>
+                        </div>
+                        <div class="bg-emerald-50 p-4 rounded border-l-4 border-emerald-500">
+                            <h4 class="font-bold text-emerald-800">Preventive Action</h4>
+                            <p class="text-sm text-emerald-900 mt-1">Attempts to prevent a <strong>potential</strong> problem from occurring.</p>
+                            <div class="taglish-box mt-2 text-xs bg-white p-2 rounded text-emerald-800">Bumili agad ng fire extinguisher bago pa man may masunog.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="quiz-11-12" class="tab-content space-y-6">
+                <div class="bg-dark text-white p-8 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-purple-400 mb-2">Final Boss: Student Enrollment System</h2>
+                    <p class="text-slate-300 text-sm">Solve a Quality Assurance case problem.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border-2 border-slate-200 shadow-sm">
+                    <div class="quiz-step active-step">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4">Case Scenario:</h3>
+                        <p class="text-slate-600 mb-6 italic bg-slate-50 p-4 rounded border-l-4 border-slate-400">"An enrollment app has bugs despite testing. Developers skip code reviews, ignore coding standards, and have incomplete test results. They focus on finding bugs during testing, but don't prevent them."</p>
+                        
+                        <p class="font-bold mb-3">Q1: Based on SQA principles, what is the fundamental root cause of these recurring defects?</p>
+                        <div class="space-y-3">
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, true)">A) A poor development process. Relying solely on Quality Control (Testing) instead of Software Quality Assurance.</button>
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, false)">B) The developers are not doing enough Regression Testing.</button>
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, false)">C) Lack of Git Workflow branches.</button>
+                        </div>
+                        <div class="hidden feedback mt-4 p-4 rounded-lg"></div>
+                    </div>
+
+                    <div class="quiz-step hidden mt-8 pt-8 border-t border-slate-200">
+                        <p class="font-bold mb-3">Q2: To ensure developers are actually following the new code review processes and documentation rules, what should the Project Manager schedule?</p>
+                        <div class="space-y-3">
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, false)">A) A Usability Test</button>
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, false)">B) A Major Release</button>
+                            <button class="w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition" onclick="handleQuizAnswer(this, true)">C) A Quality Audit</button>
+                        </div>
+                        <div class="hidden feedback mt-4 p-4 rounded-lg"></div>
+                    </div>
+
+                    <div class="hidden text-center py-10 victory-screen">
+                        <i class="fa-solid fa-trophy text-6xl text-purple-400 mb-4 drop-shadow-lg"></i>
+                        <h3 class="text-2xl font-bold text-dark">Quality Assured!</h3>
+                        <p class="text-slate-600 mt-2">You understand the difference between fixing bugs and fixing processes.</p>
+                        <button onclick="resetQuiz(this)" class="mt-6 px-6 py-2 bg-purple-500 text-white font-bold rounded-full hover:bg-purple-600 transition">Retake Quiz</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <footer class="bg-dark text-slate-400 py-6 text-center text-sm mt-auto">
+        <p>Created for "Software Engineering 2" Module Review.</p>
+        <p class="mt-1">Toggle <strong>Tropa Mode</strong> at the top for Taglish explanations!</p>
+    </footer>
+
+    <script>
+        // Navigation Logic
+        function showHome() {
+            document.querySelectorAll('.module-view').forEach(el => el.classList.remove('active'));
+            document.getElementById('home-view').classList.add('active');
+            document.getElementById('backBtn').classList.add('hidden');
+            document.getElementById('header-subtitle').innerText = "Master your Software Engineering 2 Modules";
+            window.scrollTo(0,0);
+        }
+
+        function showModule(moduleId, subtitle) {
+            document.querySelectorAll('.module-view').forEach(el => el.classList.remove('active'));
+            document.getElementById(moduleId).classList.add('active');
+            document.getElementById('backBtn').classList.remove('hidden');
+            document.getElementById('header-subtitle').innerText = subtitle;
+            
+            // Reset to first tab of the module (Finds the first tab-btn inside the module)
+            const moduleEl = document.getElementById(moduleId);
+            const firstTabBtn = moduleEl.querySelector('.tab-btn');
+            if(firstTabBtn) {
+                switchTab(firstTabBtn.getAttribute('data-target'));
+            }
+            window.scrollTo(0,0);
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            const targetContent = document.getElementById(tabId);
+            if(!targetContent) return;
+            const moduleEl = targetContent.closest('.module-view');
+            
+            // Hide all contents in this module
+            moduleEl.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Reset all buttons in this module
+            moduleEl.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('bg-slate-200', 'text-slate-700');
+            });
+            
+            // Show selected content
+            targetContent.classList.add('active');
+            
+            // Highlight selected button
+            const activeBtn = moduleEl.querySelector(`.tab-btn[data-target="${tabId}"]`);
+            if(activeBtn) {
+                activeBtn.classList.remove('bg-slate-200', 'text-slate-700');
+                activeBtn.classList.add('bg-primary', 'text-white');
+            }
+        }
+
+        // Taglish Toggle Logic
+        const toggleBtn = document.getElementById('taglishToggle');
+        toggleBtn.addEventListener('change', function() {
+            if(this.checked) {
+                document.body.classList.add('taglish-active');
+            } else {
+                document.body.classList.remove('taglish-active');
+            }
+        });
+
+        // Universal Quiz Logic
+        function handleQuizAnswer(buttonEl, isCorrect) {
+            const stepContainer = buttonEl.closest('.quiz-step');
+            const quizContainer = stepContainer.parentElement;
+            const allSteps = Array.from(quizContainer.querySelectorAll('.quiz-step'));
+            const currentIndex = allSteps.indexOf(stepContainer);
+            const feedbackEl = stepContainer.querySelector('.feedback');
+            
+            // Disable all buttons in this group
+            const buttons = stepContainer.querySelectorAll('button:not(.retry-btn)');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-slate-50', 'hover:border-primary');
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            });
+
+            feedbackEl.classList.remove('hidden');
+
+            if (isCorrect) {
+                buttonEl.classList.remove('opacity-50', 'border-slate-200');
+                buttonEl.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800', 'opacity-100');
+                
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check mr-2"></i><strong>Correct!</strong> Awesome job.`;
+                feedbackEl.classList.remove('bg-red-50', 'text-red-700', 'border-red-200');
+                feedbackEl.classList.add('bg-emerald-50', 'text-emerald-700', 'border', 'border-emerald-200');
+                
+                // Show next step or victory
+                setTimeout(() => {
+                    if (currentIndex + 1 < allSteps.length) {
+                        allSteps[currentIndex + 1].classList.remove('hidden');
+                        allSteps[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        // Hide all quiz steps
+                        allSteps.forEach(el => el.classList.add('hidden'));
+                        const victoryScreen = quizContainer.querySelector('.victory-screen');
+                        if (victoryScreen) victoryScreen.classList.remove('hidden');
+                    }
+                }, 1000);
+
+            } else {
+                buttonEl.classList.remove('opacity-50', 'border-slate-200');
+                buttonEl.classList.add('bg-red-100', 'border-red-500', 'text-red-800', 'opacity-100');
+                
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark mr-2"></i><strong>Incorrect.</strong> Give it another try!`;
+                feedbackEl.classList.remove('bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
+                feedbackEl.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
+                
+                // Allow them to retry
+                feedbackEl.innerHTML += `<br><button onclick="resetStep(this)" class="retry-btn mt-2 text-sm underline font-bold hover:text-red-900">Try Again</button>`;
+            }
+        }
+
+        function resetStep(elementInsideStep) {
+            const stepContainer = elementInsideStep.closest('.quiz-step') || elementInsideStep;
+            const buttonContainer = stepContainer.querySelector('.space-y-3');
+            const feedbackEl = stepContainer.querySelector('.feedback');
+            
+            // Reset buttons
+            const buttons = buttonContainer.querySelectorAll('button:not(.retry-btn)');
+            buttons.forEach(btn => {
+                btn.disabled = false;
+                btn.className = "w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition";
+            });
+            
+            // Hide feedback
+            if (feedbackEl) {
+                feedbackEl.className = "hidden feedback mt-4 p-4 rounded-lg";
+                feedbackEl.innerHTML = "";
+            }
+        }
+
+        function resetQuiz(btnEl) {
+            let quizContainer = btnEl.closest('.bg-white');
+            
+            // Hide victory
+            const victoryScreen = quizContainer.querySelector('.victory-screen');
+            if(victoryScreen) victoryScreen.classList.add('hidden');
+            
+            // Reset all steps
+            const steps = quizContainer.querySelectorAll('.quiz-step');
+            steps.forEach((step, index) => {
+                const feedbackEl = step.querySelector('.feedback');
+                if(feedbackEl) resetStep(feedbackEl); 
+                
+                if(index === 0) {
+                    step.classList.remove('hidden');
+                } else {
+                    step.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
